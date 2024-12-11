@@ -1,5 +1,8 @@
 #An R script for reformating the ZZ output Dipole-Dipole files into Res2D format
 
+#Version 1.1 
+#Updated 11/12/2024 to remove the Rosner's Test option and to include topography
+
 #Before running this script you need to output the Dipole-Dipole INP file using the ZZ Rdatacheck software.
 #It is recommended to tick the "Output all data(no filter)" option and then press "Output INP File button"
 
@@ -45,18 +48,6 @@ head(sort(DD$V5),10)
 #What are the 10 least negative resistivity values?
 tail(sort(DD$V5),10)
 
-#OPTIONAL STEP Use Rosner's test (Which assumes a Gaussian distribution so may not be valid) to identify outliers
-
-#Install the EnvStats Package
-install.packages("EnvStats")
-
-#Open the EnvStates Library
-library(EnvStats)
-
-#Perform the Rosner's Test to see which of the 10 extreme values are outliers. Any values that return the result "True" in the outlier column should be deleted
-Rosner <- rosnerTest(DD$V5, k = 10)
-Rosner
-
 #Having chosen which values you want to remove, remove all rows with a data value greater than a value (default is -100)
 DD <- subset(DD, V5 > -100)
 
@@ -80,4 +71,9 @@ write(Rows,printer1,append=TRUE)
 write("1",printer1,append=TRUE)
 write("0",printer1,append=TRUE)
 write.table(DD,printer1, append = TRUE, sep = "        ", row.names = FALSE, col.names = FALSE)
+#Only run rows 75-78 if you want to include topography values in the output
+write("Topography in separate list",printer1,append=TRUE)
+write("1",printer1,append=TRUE)
+write("64",printer1,append=TRUE)
+write("0, ",printer1,append=TRUE)
 close(printer1)
